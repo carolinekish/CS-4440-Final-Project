@@ -62,7 +62,10 @@ def delete_document_checkoff_sheets_collection(id=None):
         print("delete_document_checkoff_sheets_collection error: {}".format(ex))
 
 def insert_document_staff_members_collection():
-    pass 
+    pass
+
+def create_new_checkoff_sheet():
+    pass
 
 # debugging
 if __name__=="__main__":
