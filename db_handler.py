@@ -21,6 +21,8 @@ def disconnect():
     global connection
     connection.close()
 
+# checkoff_sheets collection functions
+
 def insert_document_checkoff_sheets_collection(doc):
     """
     insert document into checkoff_sheets collection
@@ -60,6 +62,8 @@ def delete_document_checkoff_sheets_collection(id=None):
         return result
     except Exception as ex:
         print("delete_document_checkoff_sheets_collection error: {}".format(ex))
+
+# staff members collection functions
 
 def insert_document_staff_members_collection():
     pass
