@@ -13,13 +13,17 @@ def generate_id(name=None):
         return sum([ord(l) for l in name])
 
 def create_checkoff_sheet_for_staff(name=""):
+    """
+    Create checkoff sheet for staff member
+    :param name:    name of staff member sheet is for
+    """
     import json
     f = open("docs/mongodb_design/rcsheet.txt", "r")
     doc = json.load(f)
     f.close()
     doc["_id"] = generate_id(name)
-    # doc = json.dumps(doc)
     insert_document_checkoff_sheets_collection(doc)
 
 if __name__=="__main__":
-    create_checkoff_sheet_for_staff("caroline")
+    pass
+    # create_checkoff_sheet_for_staff("caroline")
