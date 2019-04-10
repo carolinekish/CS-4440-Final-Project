@@ -1,5 +1,6 @@
-from flask import Flask
+from flask import Flask, redirect, url_for, request, render_template
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import  String, Column, VARCHAR
 application = Flask(__name__)
 # USE orgt_chechoffs
 
@@ -18,14 +19,46 @@ def hello_world():
 
 class Checkoff_sheet(db.Model):
         __tablename__ = 'checkoff_sheet'
-        chk_name = db.Column('chk_name', db.VARCHAR(45), primary_key = True)
-        sname = db.Column('sname', db.VARCHAR(45))
+        chk_name = Column('chk_name', String(45), primary_key = True)
+        sname = Column('sname', String(45))
 
 @application.route('/')
 def idk():
-    result = db.engine.execute('SELECT * FROM checkoff_sheet')
-    names = [row[0] for row in result]
-    return names[0]
+        return render_template('login.html') # searches for the templates folder for the .html file
+        # return redirect(url_for('login'))
+        # result = db.engine.execute('SELECT * FROM checkoff_sheet')
+        # names = [row[0] for row in result] # names is a list
+
+        # str = ""
+        # for name in names:
+        #     str += name + "<br>"
+        # return str
+
+#     printthis
+#     for i in result:
+#             printthis += row[i]];
+#     return (row[0] for row in result)
+
+
+@application.route('/login',methods = ['POST', 'GET'])
+def login():
+   if request.method == 'POST':
+      user = request.form['nm']
+      print(user)
+      return redirect(url_for('success',name = user))
+   else:
+      user = request.args.get('nm')
+      return redirect(url_for('success',name = user))
+
+# @app.route('/<string:page_name>/')
+# def render_static(page_name):
+#         return render_template('%s.html' % page_name)</string:page_name>
+
+@application.route('/success/<name>')
+def success(name):
+   return 'welcome %s' % name
 
 if __name__ == '__main__':
-    application.run(debug=True, use_reloader=True)
+    application.run(debug=True, use_reloader=True)      
+
+#todo: shouldn't a checkoff belong to a sport or a checkoff sheet?
