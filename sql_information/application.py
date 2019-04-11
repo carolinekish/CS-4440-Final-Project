@@ -1,6 +1,7 @@
 from flask import Flask, redirect, url_for, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import  String, Column, VARCHAR
+from sqlalchemy.sql import func
 application = Flask(__name__)
 # USE orgt_chechoffs
 
@@ -24,15 +25,17 @@ class Checkoff_sheet(db.Model):
 
 @application.route('/')
 def idk():
-        return render_template('login.html') # searches for the templates folder for the .html file
+      #   return render_template('login.html') # searches for the templates folder for the .html file
         # return redirect(url_for('login'))
-        # result = db.engine.execute('SELECT * FROM checkoff_sheet')
-        # names = [row[0] for row in result] # names is a list
+        start = func.current_timestamp()
+        result = db.engine.execute('SELECT * FROM checkoff_sheet')
+        end = func.current_timestamp()
+      #   names = [row[0] for row in result] # names is a list
 
-        # str = ""
-        # for name in names:
-        #     str += name + "<br>"
-        # return str
+      #   str = ""
+      #   for name in names:
+      #       str += name + "<br>"
+        return str(end - start)
 
 #     printthis
 #     for i in result:

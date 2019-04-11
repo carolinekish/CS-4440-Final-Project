@@ -1,3 +1,4 @@
+import time
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import  String, Column
@@ -14,7 +15,7 @@ class ItemTable(Table):
 
 class Position(db.Model):
         __tablename__ = 'position'
-        name = Column('name', String(45), primary_key = True)
+        name = Column('name', String(45), primary_key=True)
         abbreviation = Column('abbreviation', String(5))
 
 # # Get some objects
@@ -26,13 +27,19 @@ class Position(db.Model):
 # result = db.engine.execute('SELECT * FROM position')
 
 # items = result.fetchall()
+
+
+start = time.time()
 items = Position.query.all()
+end = time.time()
+duration = end - start
+print(duration)
 
 table = ItemTable(items)
 
 @application.route('/')
 def hello_world():
-    return table.__html__()
+    return table.__html__() + "<br>" + str(duration)
 
 # Print the html
 # print(table.__html__())
