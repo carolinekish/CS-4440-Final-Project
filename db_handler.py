@@ -66,14 +66,15 @@ def delete_document_checkoff_sheets_collection(id=None):
     except Exception as ex:
         print("delete_document_checkoff_sheets_collection error: {}".format(ex))
 
-def update_document_checkoff_sheets_collection(id, cat_index, check_index, req_index):
+def update_document_checkoff_sheets_collection(id, cat_index, check_index, req_index, authorized_by):
     """give checkoff to person corresponding to id"""
     try:
         connect()
         import datetime
-        update_string =  "categories.{}.checkoffs.{}.requirements.{}.date_fulfilled".format(cat_index, check_index, req_index)
-        date = datetime.datetime.now().strftime("%Y-%m-%d") # ("YYYY-MM-DD")
-        db.checkoff_sheets.update_one({"_id": id}, {"$set": {update_string: date}})
+        update_string_date =  "categories.{}.checkoffs.{}.requirements.{}.date_fulfilled".format(cat_index, check_index, req_index)
+        date = datetime.datetime.now().strftime("%Y-%m-%d")
+        update_string_auth = "categories.{}.checkoffs.{}.requirements.{}.authorized_by".format(cat_index, check_index, req_index)
+        db.checkoff_sheets.update_one({"_id": id}, {"$set": {update_string_date: date, update_string_auth: authorized_by}})
         disconnect()
     except Exception as ex:
         print("update_document_checkoff_sheets_collection error: {}".format(ex))
@@ -98,10 +99,4 @@ def insert_document_staff_members_collection(doc):
 
 # debugging
 if __name__=="__main__":
-    print()
-    # insert_document_checkoff_sheets_collection({"_id": 4})
-    delete_document_checkoff_sheets_collection(2)
-    result = select_document_checkoff_sheets_collection()
-    for doc in result:
-        print(doc["_id"])
-    print()
+    pass

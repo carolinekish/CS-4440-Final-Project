@@ -25,6 +25,11 @@ def create_checkoff_sheet_for_staff(name=""):
     insert_document_checkoff_sheets_collection(doc)
 
 def find_checkoff_location(name, checkoff_name):
+    """
+    Find appropriate indeces in checkoff_sheet document that correspond to the desired checkoff to be given
+    :param name: name of staff member checkoff is for
+    :param checkoff_name: name of checkoff requirement to be given 
+    """
     id = generate_id(name)
     doc = select_document_checkoff_sheets_collection(id)
     i, j, k = (0, 0, 0)
@@ -35,9 +40,18 @@ def find_checkoff_location(name, checkoff_name):
                     return i, j, k
     return i, j, k
 
+def give_checkoff(name, checkoff_name, auth_by):
+    """
+    Give checkoff to staff memeber
+    :param name:              name of staff member checkoff is for
+    :param checkoff_name:     name of checkoff requirement (associated w checkbox)
+    :param auth_by:           current user authorizing the checkoff
+    """
+    i, j, k = find_checkoff_location(name, checkoff_name)
+    update_document_checkoff_sheets_collection(generate_id(name), cat_index=i, check_index=j, req_index=k, authorized_by=auth_by)
 
 if __name__=="__main__":
-    i, j, k = find_checkoff_location("caroline", "test_one_2")
-    update_document_checkoff_sheets_collection(generate_id("caroline"), cat_index=i, check_index=j, req_index=k)
     pass
+    # i, j, k = find_checkoff_location("caroline", "test_two")
+    # update_document_checkoff_sheets_collection(generate_id("caroline"), cat_index=i, check_index=j, req_index=k, authorized_by="me!")
     # create_checkoff_sheet_for_staff("caroline")
