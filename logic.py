@@ -28,7 +28,7 @@ def find_checkoff_location(name, checkoff_name):
     """
     Find appropriate indeces in checkoff_sheet document that correspond to the desired checkoff to be given
     :param name: name of staff member checkoff is for
-    :param checkoff_name: name of checkoff requirement to be given 
+    :param checkoff_name: name of checkoff requirement to be given
     """
     id = generate_id(name)
     doc = select_document_checkoff_sheets_collection(id)
@@ -40,6 +40,7 @@ def find_checkoff_location(name, checkoff_name):
                     return i, j, k
     return i, j, k
 
+# staff member gives checkoff (USE CASE 2)
 def give_checkoff(name, checkoff_name, auth_by):
     """
     Give checkoff to staff memeber
@@ -49,6 +50,10 @@ def give_checkoff(name, checkoff_name, auth_by):
     """
     i, j, k = find_checkoff_location(name, checkoff_name)
     update_document_checkoff_sheets_collection(generate_id(name), cat_index=i, check_index=j, req_index=k, authorized_by=auth_by)
+
+# trip leaders add /remove checkoff from their sport's checkoff sheet (USE CASE 3)
+def add_requirement(cat_name, check_name, new_req_description):
+    pass
 
 if __name__=="__main__":
     pass

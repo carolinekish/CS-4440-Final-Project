@@ -37,6 +37,7 @@ def insert_document_checkoff_sheets_collection(doc):
     except Exception as ex:
         print("insert_document_checkoff_sheets_collection_ error: {}".format(ex))
 
+# staff member looks up his / her completed checkoffs (USE CASE 1)
 def select_document_checkoff_sheets_collection(id=None):
     """select checkoff sheet of staff member whose name corresponds to id"""
     try:
