@@ -25,17 +25,17 @@ class Checkoff_sheet(db.Model):
 
 @application.route('/')
 def idk():
-      #   return render_template('login.html') # searches for the templates folder for the .html file
+        return render_template('login.html') # searches for the templates folder for the .html file
         # return redirect(url_for('login'))
-        start = func.current_timestamp()
-        result = db.engine.execute('SELECT * FROM checkoff_sheet')
-        end = func.current_timestamp()
+      #   start = func.current_timestamp()
+      #   result = db.engine.execute('SELECT * FROM checkoff_sheet')
+      #   end = func.current_timestamp()
       #   names = [row[0] for row in result] # names is a list
 
       #   str = ""
       #   for name in names:
       #       str += name + "<br>"
-        return str(end - start)
+      #   return str(end - start)
 
 #     printthis
 #     for i in result:
@@ -48,18 +48,18 @@ def login():
    if request.method == 'POST':
       user = request.form['nm']
       print(user)
-      return redirect(url_for('success',name = user))
-   else:
+      return redirect(url_for('success',name = user, dumb_var= "dummy :)"))
+   else: # request.method == 'GET'
       user = request.args.get('nm')
-      return redirect(url_for('success',name = user))
+      return redirect(url_for('success',name = user, dumb_var= "dummy :)"))
 
 # @app.route('/<string:page_name>/')
 # def render_static(page_name):
 #         return render_template('%s.html' % page_name)</string:page_name>
 
-@application.route('/success/<name>')
-def success(name):
-   return 'welcome %s' % name
+@application.route('/success/<name><dumb_var>')
+def success(name, dumb_var):
+   return 'welcome %s, %s' % (name, dumb_var)
 
 if __name__ == '__main__':
     application.run(debug=True, use_reloader=True)      
