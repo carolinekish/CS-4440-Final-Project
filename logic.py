@@ -27,10 +27,17 @@ def create_checkoff_sheet_for_staff(name=""):
 def find_checkoff_location(name, checkoff_name):
     id = generate_id(name)
     doc = select_document_checkoff_sheets_collection(id)
-    cat_i, check_i, req_i = (0, 0, 0)
-    for (i, cat) in doc["categories"]:
-        pass
+    i, j, k = (0, 0, 0)
+    for i in range(len(doc["categories"])):
+        for j in range(len(doc["categories"][i]["checkoffs"])):
+            for k in range(len(doc["categories"][i]["checkoffs"][j]["requirements"])):
+                if doc["categories"][i]["checkoffs"][j]["requirements"][k]["description"] == checkoff_name:
+                    return i, j, k
+    return i, j, k
+
 
 if __name__=="__main__":
+    i, j, k = find_checkoff_location("caroline", "test_one_2")
+    update_document_checkoff_sheets_collection(generate_id("caroline"), cat_index=i, check_index=j, req_index=k)
     pass
     # create_checkoff_sheet_for_staff("caroline")

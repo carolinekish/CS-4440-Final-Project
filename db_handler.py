@@ -66,13 +66,17 @@ def delete_document_checkoff_sheets_collection(id=None):
     except Exception as ex:
         print("delete_document_checkoff_sheets_collection error: {}".format(ex))
 
-def update_document_checkoff_sheets_collection(id, check_name):
+def update_document_checkoff_sheets_collection(id, cat_index, check_index, req_index):
     """give checkoff to person corresponding to id"""
-    import datetime
-    # update_string =  "cat.{}.checkoffs.{}.requirements.{}.date_fulfilled".format(cat_index, check_index, req_index)
-    # date = datetime.datetime.now().strftime("%Y-%m-%d") ("YYYY-MM-DD")
-    # db.checkoff_sheets.update_one({"_id": id}, {"$set": {update_string: date}})
-    pass
+    try:
+        connect()
+        import datetime
+        update_string =  "categories.{}.checkoffs.{}.requirements.{}.date_fulfilled".format(cat_index, check_index, req_index)
+        date = datetime.datetime.now().strftime("%Y-%m-%d") # ("YYYY-MM-DD")
+        db.checkoff_sheets.update_one({"_id": id}, {"$set": {update_string: date}})
+        disconnect()
+    except Exception as ex:
+        print("update_document_checkoff_sheets_collection error: {}".format(ex))
 
 # staff members collection functions
 
