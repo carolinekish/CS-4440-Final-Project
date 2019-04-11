@@ -24,6 +24,13 @@ def create_checkoff_sheet_for_staff(name=""):
     doc["_id"] = generate_id(name)
     insert_document_checkoff_sheets_collection(doc)
 
+def find_checkoff_location(name, checkoff_name):
+    id = generate_id(name)
+    doc = select_document_checkoff_sheets_collection(id)
+    cat_i, check_i, req_i = (0, 0, 0)
+    for (i, cat) in doc["categories"]:
+        pass
+
 if __name__=="__main__":
     pass
     # create_checkoff_sheet_for_staff("caroline")
