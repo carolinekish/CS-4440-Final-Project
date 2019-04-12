@@ -1,5 +1,5 @@
 import time
-from flask import Flask, redirect, url_for, request, render_template
+from flask import Flask, redirect, url_for, request, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import  String, Column, VARCHAR
 from sqlalchemy.sql import func
@@ -8,6 +8,10 @@ application = Flask(__name__)
 # DB name = orgt_chechoffs
 # todo: shouldn't a checkoff belong to a sport or a checkoff sheet?
 
+orgt_member = ""
+member_id = 0
+
+application.secret_key = "super secret key"
 application.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://orgt4440:finalproject4440@orgt4440.ccfdnjnpnqku.us-east-2.rds.amazonaws.com:3306/orgt_chechoffs'
 db = SQLAlchemy(application)
           
@@ -19,10 +23,13 @@ def start():
 def login():
    if request.method == 'POST':
       orgt_member = request.form['member_name']
+      member_id_query = db.engine.execute('SELECT member_id FROM staff_members WHERE name=%s', orgt_member)
+      member_id = member_id_query.fetchall()
+      # should we add them to the table if they are not already added
       return redirect(url_for('choose_sport', name = orgt_member))
    else:
       # request.method == 'GET'
-      orgt_member = request.args.get('member_name')
+      # orgt_member = request.args.get('member_name')
       return redirect(url_for('success', name = orgt_member, dumb_var= "dummy :)"))
 
 @application.route('/choose_sport/<name>')
@@ -34,16 +41,18 @@ def choose_sport(name):
 @application.route('/checkoff_sheet/<name>', methods = ['POST'])
 def display_checkoff_sheet(name):
    startTime = time.time()
-   posQuery = db.engine.execute('SELECT * FROM position WHERE abbreviation = \'IIT\'')
+   posQuery = db.engine.execute('SELECT position_name FROM sheet_contains WHERE sheet_name = \'Rock Climbing Checkoff Sheet\'')
    categoryQuery = db.engine.execute('SELECT * FROM category WHERE name = \'Competency and Personal Checkoffs\'')
    checkoffQuery = db.engine.execute('SELECT * FROM checkoff')
    reqsQuery = db.engine.execute('SELECT * FROM requirement ')
    endTime = time.time()
 
+   # use python's 'in list'command to filter the checkoffs by category
    query_execution_time = endTime - startTime
    pos = posQuery.fetchall()
    cat = categoryQuery.fetchall()
    chks = checkoffQuery.fetchall()
+   print(chks)
    reqs = reqsQuery.fetchall()
    return render_template('checkoffs.html', 
          name = name,
@@ -56,12 +65,16 @@ def display_checkoff_sheet(name):
 @application.route('/checkoff_sheet_complete/<checkoff_id>', methods = ['POST'])
 def display_checkoff_sheet_complete(checkoff_id):  
    # find out how to pass name through here
+   # todo: find out how to not route if 
       if request.method == 'POST':
-         orgt_member = request.form['signing_member_name']
-         updateCheckoffQuery = db.engine.execute('UPDATE checkoff SET signature = \'%s\', date_time = CURRENT_TIMESTAMP WHERE checkoff_id = %s' % (orgt_member, checkoff_id))
+         name_member_signing_off = request.form['signing_member_name']
+         if (not name_member_signing_off):
+            flash("Signature field is empty")
+         else:
+            db.engine.execute('UPDATE checkoff SET signature = \'%s\', date_time = CURRENT_TIMESTAMP WHERE checkoff_id = %s' % (name_member_signing_off, checkoff_id))
          # display_checkoff_sheet(name)
 
-      return display_checkoff_sheet("Test Name") 
+      return display_checkoff_sheet(orgt_member) 
       # todo: this does NOT change the route name
 
 
