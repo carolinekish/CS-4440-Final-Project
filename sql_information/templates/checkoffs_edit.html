@@ -32,9 +32,10 @@
                                 </td>
                                 <td> 
                                     {% if checkoff.signature == None and checkoff.date_time == None %}
+                                    <!-- todo: pass the checkoff_id AND the new signature to the next method -->
                                         <form align="center" action="/checkoff_sheet_complete/{{checkoff.checkoff_id}}", method = "post">
                                             <input type="text" name="signing_member_name" value="Signature"><br>
-                                            <input type="submit" value="Sign Off"/> 
+                                            <input type="submit" value="Sign Off"/>
                                         </form>
                                     {% else %}
                                         <form align="center">

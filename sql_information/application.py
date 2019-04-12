@@ -3,18 +3,13 @@ from flask import Flask, redirect, url_for, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import  String, Column, VARCHAR
 from sqlalchemy.sql import func
+from database import db_session
 application = Flask(__name__)
 # DB name = orgt_chechoffs
 # todo: shouldn't a checkoff belong to a sport or a checkoff sheet?
 
 application.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://orgt4440:finalproject4440@orgt4440.ccfdnjnpnqku.us-east-2.rds.amazonaws.com:3306/orgt_chechoffs'
 db = SQLAlchemy(application)
-
-# @application.route('/')
-# def hello_world():
-#     print(db)
-#     db.create_all()
-#     return 'Hello World'
           
 @application.route('/')
 def start():
@@ -38,25 +33,60 @@ def choose_sport(name):
 
 @application.route('/checkoff_sheet/<name>', methods = ['POST'])
 def display_checkoff_sheet(name):
-      startTime = time.time()
-      posQuery = db.engine.execute('SELECT * FROM position WHERE abbreviation = \'IIT\'')
-      categoryQuery = db.engine.execute('SELECT * FROM category WHERE name = \'Competency and Personal Checkoffs\'')
-      checkoffQuery = db.engine.execute('SELECT * FROM checkoff')
-      reqsQuery = db.engine.execute('SELECT * FROM requirement ')
-      endTime = time.time()
+   startTime = time.time()
+   posQuery = db.engine.execute('SELECT * FROM position WHERE abbreviation = \'IIT\'')
+   categoryQuery = db.engine.execute('SELECT * FROM category WHERE name = \'Competency and Personal Checkoffs\'')
+   checkoffQuery = db.engine.execute('SELECT * FROM checkoff')
+   reqsQuery = db.engine.execute('SELECT * FROM requirement ')
+   endTime = time.time()
 
-      query_execution_time = endTime - startTime
-      pos = posQuery.fetchall()
-      cat = categoryQuery.fetchall()
-      chks = checkoffQuery.fetchall()
-      reqs = reqsQuery.fetchall()
-      return render_template('checkoffs.html', 
-            name = name,
-            categories=cat,
-            positions=pos,
-            checkoffs=chks,
-            requirements=reqs,
-            time=query_execution_time) 
+   query_execution_time = endTime - startTime
+   pos = posQuery.fetchall()
+   cat = categoryQuery.fetchall()
+   chks = checkoffQuery.fetchall()
+   reqs = reqsQuery.fetchall()
+   return render_template('checkoffs.html', 
+         name = name,
+         categories=cat,
+         positions=pos,
+         checkoffs=chks,
+         requirements=reqs,
+         time=query_execution_time) 
+
+@application.route('/checkoff_sheet_complete/<checkoff_id>', methods = ['POST'])
+def display_checkoff_sheet_complete(checkoff_id):  
+   # find out how to pass name through here
+      if request.method == 'POST':
+         orgt_member = request.form['signing_member_name']
+         updateCheckoffQuery = db.engine.execute('UPDATE checkoff SET signature = \'%s\', date_time = CURRENT_TIMESTAMP WHERE checkoff_id = %s' % (orgt_member, checkoff_id))
+         # display_checkoff_sheet(name)
+
+      return display_checkoff_sheet("Test Name") 
+      # todo: this does NOT change the route name
+
+
+      # return redirect(url_for('choose_sport', name = orgt_member))
+
+      # startTime = time.time()
+      # posQuery = db.engine.execute('SELECT * FROM position WHERE abbreviation = \'IIT\'')
+      # categoryQuery = db.engine.execute('SELECT * FROM category WHERE name = \'Competency and Personal Checkoffs\'')
+      # checkoffQuery = db.engine.execute('SELECT * FROM checkoff')
+      # reqsQuery = db.engine.execute('SELECT * FROM requirement ')
+      # endTime = time.time()
+
+      # query_execution_time = endTime - startTime
+      # pos = posQuery.fetchall()
+      # cat = categoryQuery.fetchall()
+      # chks = checkoffQuery.fetchall()
+      # reqs = reqsQuery.fetchall()
+      # return render_template('checkoffs.html', 
+      #       name = name,
+      #       categories=cat,
+      #       positions=pos,
+      #       checkoffs=chks,
+      #       requirements=reqs,
+      #       time=query_execution_time) 
+
 
 
 
