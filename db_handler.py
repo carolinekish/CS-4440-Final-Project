@@ -37,7 +37,6 @@ def insert_document_checkoff_sheets_collection(doc):
     except Exception as ex:
         print("insert_document_checkoff_sheets_collection_ error: {}".format(ex))
 
-# staff member looks up his / her completed checkoffs (USE CASE 1)
 def select_document_checkoff_sheets_collection(id=None):
     """select checkoff sheet of staff member whose name corresponds to id"""
     try:
@@ -79,6 +78,17 @@ def update_document_checkoff_sheets_collection(id, cat_index, check_index, req_i
         disconnect()
     except Exception as ex:
         print("update_document_checkoff_sheets_collection error: {}".format(ex))
+
+def update_document_checkoff_sheet_colleciton_change_checkoff(id, cat_index, check_index, new_req_description):
+    """add checkoff requirement to sport with id's checkoff sheet"""
+    try:
+        connect()
+        update_string = "categories.{}.checkoffs.{}.requirements".format(cat_index, check_index)
+        db.checkoff_sheets.update_one({"_id": id},{"$push": {update_string: {"description": new_req_description, "date_fulfilled": "N/A", "authorized_by": "N/A"}}})
+        disconnect()
+    except Exception as ex:
+        print("update_document_checkoff_sheet_colleciton_change_checkoff error: {}".format(ex))
+
 
 # staff members collection functions
 
