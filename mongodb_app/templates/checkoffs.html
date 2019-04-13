@@ -1,0 +1,41 @@
+<!-- /templates/checkoffs.html  -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="flight-container" style="overflow: visible; max-height: 100%">
+        <div class="table-responsive">
+            <h3 align="center">Welcome, {{name}}</h3>
+                {% for category in document["categories"] %}
+                    <h3 align="center">{{category["position"]}}</h3>
+                    <table class="table" id="checkoffs" rules="all">
+                        <thead>
+                            <tr>
+                                <th scope="col">{{category["cat_name"]}} ID</th>
+                                <th scope="col">Signature</th>
+                                <th scope="col">Date and Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for checkoff in category["checkoffs"] %}
+                        <!-- id = {{checkoff.id}} went after <tr> -->
+                            <tr>
+                                <td >{{checkoff["check_name"]}}
+                                        {% for requirement in checkoff["requirements"] %}
+                                                <br>
+                                                <input type="checkbox" name="checkbox" id= {{requirement.id}} value="value">
+                                                <label for={{requirement.id}}>{{requirement.description}}</label>
+
+                                    {% endfor %}
+                                </td>
+                                <td>{{checkoff["authorized_by"]}}</td>
+                                <td>{{checkoff["date_fulfilled"]}}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-block btn-primary">Update Checkoffs</button>
+                {% endfor %}
+        </div>
+    </div>
+{% endblock %}

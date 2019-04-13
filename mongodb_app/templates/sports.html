@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="flight-container" style="overflow: visible; max-height: 100%">
+        <div class="table-responsive" align="center">
+            <h1 align="center">Welcome, {{name}}</h1>
+            <h4 align="center">Choose Sport:</h4>
+            <form action="/checkoff_sheet/{{name}}", method = "post">
+                <input type="submit" value="{{sports[0]}}" />
+            </form>
+            {% for sport in sports[1:] %}
+                <br>
+                <button type="submit">{{sport}}</button>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
