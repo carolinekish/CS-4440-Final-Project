@@ -34,6 +34,16 @@ def is_instructor(name=""):
     doc = select_document_staff_members_collection(name)
     return doc["position"] == "Instructor"
 
+def is_tl(name=""):
+    """
+    Check if staff member 'name' is a Trip Leader
+    :param name: name of the staff member to check
+    :return:     True, if 'name' is Trip Leader
+                 False, otherwise
+    """
+    doc = select_document_staff_members_collection(name)
+    return doc["position"] == "Trip Leader"
+
 def find_checkoff_location(name, req_name):
     """
     Find appropriate indeces in checkoff_sheet document that correspond to the desired checkoff to be given

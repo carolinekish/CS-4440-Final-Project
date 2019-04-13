@@ -17,5 +17,12 @@
             {% endfor %}
         </div>
         <br />
+        <div class="flight-container" style="overflow: visible; max-height: 100% text-align:center;">
+            <h4 align="center">Search Staff:</h4>
+            <form action="/search_staff" method="post" style="text-align:center;">
+                <input type="text" name="search_name"/>
+                <button type="submit">Search</button>
+            </form>
+        </div>
     </div>
 {% endblock %}

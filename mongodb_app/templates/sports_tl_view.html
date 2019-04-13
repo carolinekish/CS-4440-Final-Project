@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="flight-container" style="overflow: visible; max-height: 100%">
+        <div class="table-responsive" align="center">
+            <br />
+            <h1 align="center">Welcome {{name}}!</h1>
+            <br />
+            <h4 align="center">Choose Sport:</h4>
+            <form action="/checkoff_sheet/{{name}}" method="post">
+                <input type="submit" value="{{sports[0]}}" />
+            </form>
+            {% for sport in sports[1:] %}
+                <br />
+                <button type="submit">{{sport}}</button>
+                <br />
+            {% endfor %}
+        </div>
+        <br />
+        <div class="flight-container" style="overflow: visible; max-height: 100% text-align:center;">
+            <h4 align="center">Search Instructor In Training:</h4>
+            <form action="/search_staff" method="post" style="text-align:center;">
+                <input type="text" name="search_name"/>
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        <br />
+        <div class="flight-container" style="overflow: visible; max-height: 100% text-align:center;">
+            <h4 align="center">Create New Checkoff:</h4>
+            <form action="/add_checkoff" method="post" style="text-align:center;">
+                <input type="text" name="category" placeholder="Category"/>
+                <input type="text" name="checkoff_name" placeholder="Name"/>
+                <input type="text" name="req_description" placeholder="Description"/>
+                <button type="submit">Create</button>
+            </form>
+        </div>
+        <br />
+        <br />
+    </div>
+{% endblock %}
