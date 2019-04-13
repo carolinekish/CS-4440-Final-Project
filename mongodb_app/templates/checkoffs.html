@@ -1,5 +1,3 @@
-<!-- /templates/checkoffs.html  -->
-
 {% extends 'base.html' %}
 
 {% block content %}
@@ -8,34 +6,39 @@
             <h3 align="center">Welcome, {{name}}</h3>
                 {% for category in document["categories"] %}
                     <h3 align="center">{{category["position"]}}</h3>
+
+                    <form action="/update_checkoffs/{{name}}" method="post">
                     <table class="table" id="checkoffs" rules="all">
                         <thead>
                             <tr>
+                                <th scope="col">Checkoff Name</th>
                                 <th scope="col">{{category["cat_name"]}} ID</th>
                                 <th scope="col">Signature</th>
                                 <th scope="col">Date and Time</th>
                             </tr>
+
                         </thead>
                         <tbody>
-                        {% for checkoff in category["checkoffs"] %}
-                        <!-- id = {{checkoff.id}} went after <tr> -->
-                            <tr>
-                                <td >{{checkoff["check_name"]}}
-                                        {% for requirement in checkoff["requirements"] %}
-                                                <br>
-                                                <input type="checkbox" name="checkbox" id= {{requirement.id}} value="value">
-                                                <label for={{requirement.id}}>{{requirement.description}}</label>
-
-                                    {% endfor %}
-                                </td>
-                                <td>{{checkoff["authorized_by"]}}</td>
-                                <td>{{checkoff["date_fulfilled"]}}</td>
-                            </tr>
-                        {% endfor %}
+                            {% for checkoff in category["checkoffs"] %}
+                                <th rowspan="{{checkoff['requirements'] | length + 1 }}" scope="rowgroup"> {{checkoff["check_name"]}} </th>
+                                {% for requirement in checkoff["requirements"] %}
+                                <tr>
+                                    <td >
+                                    <input type="checkbox" name="checkbox" id= "{{requirement['description']}}" value="{{requirement['description']}}"/>
+                                    <label for="{{requirement['description']}}">{{requirement["description"]}}</label>
+                                    </td>
+                                    <td>{{requirement["authorized_by"]}}</td>
+                                    <td>{{requirement["date_fulfilled"]}}</td>
+                                </tr>
+                                {% endfor %}
+                            {% endfor %}
                         </tbody>
+
                     </table>
-                    <button type="submit" class="btn btn-block btn-primary">Update Checkoffs</button>
+
                 {% endfor %}
+                <button type="submit" class="btn btn-block btn-primary">Update Checkoffs</button>
+                </form>
         </div>
     </div>
 {% endblock %}
