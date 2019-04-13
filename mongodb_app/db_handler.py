@@ -94,7 +94,7 @@ def update_document_checkoff_sheet_colleciton_change_checkoff(id, cat_index, che
 
 def insert_document_staff_members_collection(doc):
     """
-    insert document (or many documents)into staff_members collection
+    insert document (or many documents) into staff_members collection
     """
     try:
         connect()
@@ -105,6 +105,21 @@ def insert_document_staff_members_collection(doc):
         disconnect()
     except Exception as ex:
         print("insert_document_staff_members_collection error: {}".format(ex))
+
+def select_document_staff_members_collection(name=None):
+    """
+    select staff_member info whose name corresponds to name
+    """
+    try:
+        connect()
+        if name is None:
+            result = db.staff_members.find()
+        else:
+            result = db.staff_members.find({"name": name})[0]
+        disconnect()
+        return result
+    except Exception as ex:
+        print("select_document_staff_members_collection error: {}".format(ex))
 
 # sports collection functions
 

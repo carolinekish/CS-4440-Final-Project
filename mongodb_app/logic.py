@@ -24,6 +24,16 @@ def create_checkoff_sheet_for_staff(name=""):
     doc["_id"] = generate_id(name)
     insert_document_checkoff_sheets_collection(doc)
 
+def is_instructor(name=""):
+    """
+    Check if staff member 'name' is an Instructor
+    :param name: name of the staff member to check
+    :return:     True, if 'name' is Instructor
+                 False, if 'name' is Instructor in Training
+    """
+    doc = select_document_staff_members_collection(name)
+    return doc["position"] == "Instructor"
+
 def find_checkoff_location(name, req_name):
     """
     Find appropriate indeces in checkoff_sheet document that correspond to the desired checkoff to be given
@@ -68,6 +78,7 @@ def give_checkoff(name, checkoff_name, auth_by):
     :param checkoff_name:     name of checkoff requirement (associated w checkbox)
     :param auth_by:           current user authorizing the checkoff
     """
+    print("AUTH_BY: {}".format(auth_by))
     i, j, k = find_checkoff_location(name, checkoff_name)
     update_document_checkoff_sheets_collection(generate_id(name), cat_index=i, check_index=j, req_index=k, authorized_by=auth_by)
 
