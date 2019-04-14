@@ -1,6 +1,7 @@
 import pymongo
 import json
 from pymongo import MongoClient
+import ssl
 
 connection = None
 db = None
@@ -11,8 +12,15 @@ def connect():
     """
     global connection
     global db
-    connection = MongoClient()
-    db = connection.orgt_db
+
+    # MongoDB Local
+    # connection = MongoClient()
+    # db = connection.orgt_db
+
+    # MongoDB Atlas
+    connection = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-bt4cv.mongodb.net/test?retryWrites=true", ssl=True, ssl_cert_reqs=ssl.CERT_NONE)
+    db = connection.atlas_orgt
+
 
 def disconnect():
     """
@@ -123,6 +131,20 @@ def select_document_staff_members_collection(name=None):
 
 # sports collection functions
 
+def insert_document_sports_collection(doc):
+    """
+    insert document (or many documents) into sports collection
+    """
+    try:
+        connect()
+        if type(doc) == list:
+            db.sports.insert_many(doc)
+        else:
+            db.sports.insert_one(doc)
+        disconnect()
+    except Exception as ex:
+        print("insert_document_sports_collection error: {}".format(ex))
+        
 # debugging
 if __name__=="__main__":
     pass
