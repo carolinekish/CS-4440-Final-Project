@@ -3,7 +3,7 @@ from flask import Flask, redirect, url_for, request, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import  String, Column, VARCHAR
 from sqlalchemy.sql import func
-from database import db_session
+# from database import db_session
 application = Flask(__name__)
 # DB name = orgt_chechoffs
 # todo: shouldn't a checkoff belong to a sport or a checkoff sheet?
@@ -41,7 +41,17 @@ def choose_sport(name):
 @application.route('/checkoff_sheet/<name>', methods = ['POST'])
 def display_checkoff_sheet(name):
    startTime = time.time()
+   # todo: paramaterize the sport?
    posQuery = db.engine.execute('SELECT position_name FROM sheet_contains WHERE sheet_name = \'Rock Climbing Checkoff Sheet\'')
+   positions = posQuery.fetchall()
+   positionValues = "("
+   for position in positions:
+      positionValues += position + ", "
+   positionValues = positionValues[:-2]
+   positionValues += ')'
+   print(positionValues)
+   
+   cat_belongsTo_position_Query = db.engine.execute('SELECT * FROM belongs_to WHERE pos_name in \'')
    categoryQuery = db.engine.execute('SELECT * FROM category WHERE name = \'Competency and Personal Checkoffs\'')
    checkoffQuery = db.engine.execute('SELECT * FROM checkoff')
    reqsQuery = db.engine.execute('SELECT * FROM requirement ')
@@ -49,7 +59,6 @@ def display_checkoff_sheet(name):
 
    # use python's 'in list'command to filter the checkoffs by category
    query_execution_time = endTime - startTime
-   pos = posQuery.fetchall()
    cat = categoryQuery.fetchall()
    chks = checkoffQuery.fetchall()
    print(chks)
