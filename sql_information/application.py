@@ -43,7 +43,7 @@ def display_checkoff_sheet(name):
    startTime = time.time()
    posQuery = db.engine.execute('SELECT position_name FROM sheet_contains WHERE sheet_name = \'Rock Climbing Checkoff Sheet\'')
    categoryQuery = db.engine.execute('SELECT * FROM category WHERE name = \'Competency and Personal Checkoffs\'')
-   checkoffQuery = db.engine.execute('SELECT * FROM checkoff')
+   checkoffQuery = db.engine.execute('select * from checkoff JOIN completed_checkoffs ON checkoff.checkoff_id = completed_checkoffs.checkoff GROUP BY checkoff')
    reqsQuery = db.engine.execute('SELECT * FROM requirement ')
    endTime = time.time()
 

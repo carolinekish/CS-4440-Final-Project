@@ -34,7 +34,7 @@
                                     {% if checkoff.signature == None and checkoff.date_time == None %}
                                         <form align="center" action="/checkoff_sheet/{{checkoff.checkoff_id}}", method = "post">
                                             <input type="text" name="signing_member_name" placeholder="Signature"><br>
-                                            <input type="submit" value="Sign Off"/> 
+                                            <input type="submit" value="Sign Off"/>
                                         </form>
                                     {% else %}
                                         <form align="center">
@@ -43,6 +43,7 @@
                                             {{checkoff.date_time}}
                                         </form>
                                     {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>
