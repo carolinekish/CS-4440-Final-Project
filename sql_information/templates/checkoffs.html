@@ -3,30 +3,55 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="flight-container" style="overflow: visible; max-height: 100%">
+<div class="flight-container" style="overflow: visible; max-height: 100%">
         <div class="table-responsive">
             <h3 align="center">Welcome, {{name}}</h3>
+            <h6 align="center">Query Execution Time: {{time}} seconds</h6>
+            <br>
             {% for position in positions %} 
                 {% for category in categories %}
-                    <h3 align="center">{{position.position_name}}</h3>
-                    <table class="table" id="checkoffs" rules="all">
-                        <thead>
-                            <tr>
-                                <th align="center" scope="col" >{{category.name}}</th>
-                                <th align="center" scope="col" >Signature <br> Date and Time</th>
-                                <!-- <th scope="col">Date and Time</th> -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for checkoff in checkoffs %}
-                        <!-- id = {{checkoff.id}} went after <tr> -->
-                            <tr> 
-                                <td>{{checkoff.title}} 
-                                        {% for requirement in requirements %}
-                                            {% if requirement.checkoff_id == checkoff.checkoff_id %}
-                                                <br>
-                                                <input type="checkbox" name="checkbox" id= {{requirement.id}} value="value">
-                                                <label for={{requirement.id}}>{{requirement.description}}</label>
+                    {% if position.position_name == category.pos_name %}
+                        <h3 align="center">{{position.position_name}}</h3>
+                        <table class="table" id="checkoffs" rules="all">
+                            <thead>
+                                <tr>
+                                    <th align="center" scope="col" >{{category.cat_name}}</th>
+                                    <th align="center" scope="col" >Signature <br> Date and Time</th>
+                                    <!-- <th scope="col">Date and Time</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                            {% for checkoff in checkoffs %}
+                            <!-- id = {{checkoff.id}} went after <tr> -->
+                                {% if checkoff.category == category.cat_name and checkoff.required_position == position.position_name %}
+                                    <tr> 
+                                        <td>{{checkoff.title}} 
+                                                {% for requirement in requirements %}
+                                                    {% if requirement.checkoff_id == checkoff.checkoff_id %}
+                                                        <br>
+                                                        <input type="checkbox" name="checkbox" id= {{requirement.id}} value="value">
+                                                        <label for={{requirement.id}}>{{requirement.description}}</label>
+                                                    {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                        <td> 
+                                            {% if checkoff.checkoff_id not in completed_ids %}
+                                                <form align="center" action="/checkoff_sheet_edit/{{checkoff.checkoff_id}}", method = "post">
+                                                    <input type="text" name="signing_member_name" placeholder="Signature">
+                                                    <br>
+                                                    <input type="submit" value="Sign Off"/> 
+                                                </form>
+                                            {% else %}
+                                                {% for completed_checkoff in completed_checkoffs %}
+                                                    {% if checkoff.checkoff_id == completed_checkoff.checkoff %}
+                                                        <form align="center">
+                                                            {{completed_checkoff.signature}}
+                                                            <br>
+                                                            {{completed_checkoff.date_time}}
+                                                        </form>
+                                                    {% endif %}
+                                                {% endfor %}
                                             {% endif %}
                                     {% endfor %}
                                 </td>
@@ -49,6 +74,14 @@
                         </tbody>
                     </table>
                     <h3 align="center">Query Execution Time: {{time}} seconds</h3>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <br>
+                    {% endif %}
                     <!-- <button type="submit" class="btn btn-block btn-primary">Update Checkoffs</button> -->
                     <!-- <form action="/checkoff_sheet_edit/{{name}}", method = "post">
                         <input type="submit" value="" />
