@@ -85,6 +85,7 @@ def display_checkoff_sheet(name):
          requirements=reqs,
          time=query_execution_time) 
 
+# instead of this route, just post back to the other method
 @application.route('/checkoff_sheet_edit/<checkoff_id>', methods = ['POST'])
 def display_checkoff_sheet_edit(checkoff_id):  
    # find out how to pass name through here
