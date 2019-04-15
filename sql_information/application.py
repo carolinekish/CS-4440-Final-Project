@@ -38,6 +38,7 @@ def start():
 def login():
    if request.method == 'POST':
       orgt_member = request.form['member_name']
+      print(orgt_member)
       member_id_query = db.engine.execute('SELECT member_id FROM staff_members WHERE name=%s', orgt_member)
       global member_id # needed in order to MODIFY a global variable
       member_id = member_id_query.fetchall()[0].member_id # should we add them to the table if they are not already added
@@ -55,6 +56,14 @@ def choose_sport(name):
 
 @application.route('/checkoff_sheet/<name>', methods = ['POST'])
 def display_checkoff_sheet(name):
+   prev = request.form['prev']
+   if prev == "confirm":
+       checkoff_id = request.form['checkoff_id']
+       name_member_signing_off = request.form['signing_member_name']
+       db.engine.execute(
+           'INSERT INTO completed_checkoffs (member, checkoff, signature, date_time) VALUES (%s,%s,%s,CURRENT_TIMESTAMP)',
+           member_id, checkoff_id, name_member_signing_off)
+
    startTime = time.time()
    posQuery = db.engine.execute('SELECT position_name FROM sheet_contains WHERE sheet_name = \'Rock Climbing Checkoff Sheet\'')
    categoryQuery = db.engine.execute('SELECT * FROM category WHERE name = \'Competency and Personal Checkoffs\'')
@@ -76,18 +85,29 @@ def display_checkoff_sheet(name):
    chks = checkoffQuery.fetchall()
    completed_chks = completedCheckoffsQuery.fetchall()
    completed_ids = getCompletedCheckoffIDs(completed_chks)
-   print completed_ids
+   print(completed_ids)
    reqs = reqsQuery.fetchall()
    
    return render_template('checkoffs.html', 
          name = name,
+         member=member_id,
          categories=cat,
          positions=positions,
          checkoffs=chks,
          completed_ids=completed_ids,
          completed_checkoffs=completed_chks,
          requirements=reqs,
-         time=query_execution_time) 
+         time=query_execution_time)
+
+@application.route('/checkoff_confirm/<checkoff_id>', methods = ['POST'])
+def display_confirmation(checkoff_id):
+    sign_name = request.form['signing_member_name']
+    mem_name = request.form['name']
+    return render_template('confirm.html',
+                           name=sign_name,
+                           chk_id=checkoff_id,
+                           memberid=member_id,
+                           membername=mem_name)
 
 @application.route('/checkoff_sheet_edit/<checkoff_id>', methods = ['POST'])
 def display_checkoff_sheet_edit(checkoff_id):  
@@ -98,9 +118,9 @@ def display_checkoff_sheet_edit(checkoff_id):
          if (not name_member_signing_off):
             flash("Signature field is empty")
          else:
-            print member_id
-            print checkoff_id 
-            print name_member_signing_off
+            print(member_id)
+            print(checkoff_id)
+            print(name_member_signing_off)
             db.engine.execute('INSERT INTO completed_checkoffs (member, checkoff, signature, date_time) VALUES (%s,%s,%s,CURRENT_TIMESTAMP)', member_id, checkoff_id, name_member_signing_off)
          # display_checkoff_sheet(name)
       return 

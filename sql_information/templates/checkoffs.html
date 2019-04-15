@@ -33,11 +33,13 @@
                                                         <input type="checkbox" name="checkbox" id= {{requirement.id}} value="value">
                                                         <label for={{requirement.id}}>{{requirement.description}}</label>
                                                     {% endif %}
-                                            {% endfor %}
+                                                {% endfor %}
                                         </td>
                                         <td> 
                                             {% if checkoff.checkoff_id not in completed_ids %}
-                                                <form align="center" action="/checkoff_sheet_edit/{{checkoff.checkoff_id}}", method = "post">
+                                                <form align="center" action="/checkoff_confirm/{{checkoff.checkoff_id}}" method = "post">
+                                                    <input type="hidden" name="signing_member_id" value="{{member}}"/>
+                                                    <input type="hidden" name="name" value="{{name}}"/>
                                                     <input type="text" name="signing_member_name" placeholder="Signature">
                                                     <br>
                                                     <input type="submit" value="Sign Off"/> 
@@ -53,40 +55,42 @@
                                                     {% endif %}
                                                 {% endfor %}
                                             {% endif %}
-                                    {% endfor %}
-                                </td>
-                                <td> 
-                                    {% if checkoff.signature == None and checkoff.date_time == None %}
-                                        <form align="center" action="/checkoff_sheet/{{checkoff.checkoff_id}}", method = "post">
-                                            <input type="text" name="signing_member_name" placeholder="Signature"><br>
-                                            <input type="submit" value="Sign Off"/>
-                                        </form>
-                                    {% else %}
-                                        <form align="center">
-                                            {{checkoff.signature}}
-                                            <br>
-                                            {{checkoff.date_time}}
-                                        </form>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                    <h3 align="center">Query Execution Time: {{time}} seconds</h3>
+                                        </td>
+                                        <td>
+                                            {% if checkoff.signature == None and checkoff.date_time == None %}
+                                                <form align="center" action="/checkoff_confirm/{{checkoff.checkoff_id}}" method = "post">
+                                                    <input type="hidden" name="signing_member_id" value="{{member}}"/>
+                                                    <input type="hidden" name="name" value="{{name}}"/>
+                                                    <input type="text" name="signing_member_name" placeholder="Signature"><br>
+                                                    <input type="submit" value="Sign Off"/>
+                                                </form>
+                                            {% else %}
+                                                <form align="center">
+                                                    {{checkoff.signature}}
+                                                    <br>
+                                                    {{checkoff.date_time}}
+                                                </form>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                 {% endif %}
                             {% endfor %}
                             </tbody>
                         </table>
-                        <br>
+                        <h3 align="center">Query Execution Time: {{time}} seconds</h3>
+                                        </td>
+                                    </tr>
                     {% endif %}
+                {% endfor %}
+                            </tbody>
+                        </table>
+                        <br>
+
                     <!-- <button type="submit" class="btn btn-block btn-primary">Update Checkoffs</button> -->
                     <!-- <form action="/checkoff_sheet_edit/{{name}}", method = "post">
                         <input type="submit" value="" />
                     </form> -->
-                {% endfor %}
+
             {% endfor %}
 
         </div>
