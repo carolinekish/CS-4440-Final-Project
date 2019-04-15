@@ -21,9 +21,11 @@ def disconnect():
     global connection
     connection.close()
 
+# checkoff_sheets collection functions
+
 def insert_document_checkoff_sheets_collection(doc):
     """
-    insert document into checkoff_sheets collection
+    insert document (or many documents) into checkoff_sheets collection
     """
     try:
         connect()
@@ -35,7 +37,9 @@ def insert_document_checkoff_sheets_collection(doc):
     except Exception as ex:
         print("insert_document_checkoff_sheets_collection_ error: {}".format(ex))
 
+# staff member looks up his / her completed checkoffs (USE CASE 1)
 def select_document_checkoff_sheets_collection(id=None):
+    """select checkoff sheet of staff member whose name corresponds to id"""
     try:
         connect()
         if id is None:
@@ -44,13 +48,15 @@ def select_document_checkoff_sheets_collection(id=None):
             # like a regular python dict
             result = db.checkoff_sheets.find()
         else:
-            result = db.checkoff_sheets.find({"_id": id})
+            # return first (ONLY) doc associated with id as dict
+            result = db.checkoff_sheets.find({"_id": id})[0]
         disconnect()
         return result
     except Exception as ex:
         print("select_document_checkoff_sheets_collection error: {}".format(ex))
 
 def delete_document_checkoff_sheets_collection(id=None):
+    """delete checkoff sheet corresponding to id"""
     try:
         connect()
         result = db.checkoff_sheets.delete_one({"_id": id})
@@ -61,18 +67,37 @@ def delete_document_checkoff_sheets_collection(id=None):
     except Exception as ex:
         print("delete_document_checkoff_sheets_collection error: {}".format(ex))
 
-def insert_document_staff_members_collection():
-    pass
+def update_document_checkoff_sheets_collection(id, cat_index, check_index, req_index, authorized_by):
+    """give checkoff to person corresponding to id"""
+    try:
+        connect()
+        import datetime
+        update_string_date =  "categories.{}.checkoffs.{}.requirements.{}.date_fulfilled".format(cat_index, check_index, req_index)
+        date = datetime.datetime.now().strftime("%Y-%m-%d")
+        update_string_auth = "categories.{}.checkoffs.{}.requirements.{}.authorized_by".format(cat_index, check_index, req_index)
+        db.checkoff_sheets.update_one({"_id": id}, {"$set": {update_string_date: date, update_string_auth: authorized_by}})
+        disconnect()
+    except Exception as ex:
+        print("update_document_checkoff_sheets_collection error: {}".format(ex))
 
-def create_new_checkoff_sheet():
-    pass
+# staff members collection functions
+
+def insert_document_staff_members_collection(doc):
+    """
+    insert document (or many documents)into staff_members collection
+    """
+    try:
+        connect()
+        if type(doc) == list:
+            db.staff_members.insert_many(doc)
+        else:
+            db.staff_members.insert_one(doc)
+        disconnect()
+    except Exception as ex:
+        print("insert_document_staff_members_collection error: {}".format(ex))
+
+# sports collection functions
 
 # debugging
 if __name__=="__main__":
-    print()
-    # insert_document_checkoff_sheets_collection({"_id": 4})
-    delete_document_checkoff_sheets_collection(2)
-    result = select_document_checkoff_sheets_collection()
-    for doc in result:
-        print(doc["_id"])
-    print()
+    pass

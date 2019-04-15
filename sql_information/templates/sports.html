@@ -6,6 +6,7 @@
             <h1 align="center">Welcome, {{name}}</h1>
             <h4 align="center">Choose Sport:</h4>
             <form action="/checkoff_sheet/{{name}}", method = "post">
+                <input type="hidden" name="prev" value="sports"/>
                 <input type="submit" value="Rock Climbing" />
             </form>
             {% for sport in sports %}
