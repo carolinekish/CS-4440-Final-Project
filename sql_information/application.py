@@ -96,7 +96,7 @@ def display_checkoff_sheet(name, member_id):
    chks = checkoffQuery.fetchall()
    completed_chks = completedCheckoffsQuery.fetchall()
    completed_ids = getCompletedCheckoffIDs(completed_chks)
-   print completed_ids
+   print(completed_ids)
    reqs = reqsQuery.fetchall()
    
    view = ''
@@ -114,6 +114,27 @@ def display_checkoff_sheet(name, member_id):
          completed_checkoffs=completed_chks,
          requirements=reqs,
          time=query_execution_time) 
+
+@application.route('/checkoff_confirm/<checkoff_id>', methods = ['POST'])
+def display_confirmation(checkoff_id):
+    reqIdQuery = db.engine.execute('SELECT req_id FROM requirement WHERE checkoff_id = %s', checkoff_id)
+    reqIds = reqIdQuery.fetchall()
+    reqIdList = []
+    for id in reqIds:
+        reqIdList.append(id.req_id)
+    print(reqIdList)
+    for id in reqIdList:
+        name = 'checkbox' + str(id)
+        sign_name2 = request.form['signing_member_name']
+        value = request.form[name]
+        print(value)
+    sign_name = request.form['signing_member_name']
+    mem_name = request.form['name']
+    return render_template('confirm.html',
+                           name=sign_name,
+                           chk_id=checkoff_id,
+                           memberid=member_id,
+                           membername=mem_name)
 
 @application.route('/checkoff_sheet_edit/<checkoff_id>', methods = ['POST'])
 def display_checkoff_sheet_edit(checkoff_id):  
