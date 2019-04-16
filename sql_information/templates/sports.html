@@ -5,7 +5,7 @@
         <div class="table-responsive" align="center">
             <h1 align="center">Welcome, {{name}}</h1>
             <h4 align="center">Choose Sport:</h4>
-            <form action="/checkoff_sheet/{{name}}", method = "post">
+            <form action="/checkoff_sheet_user", method = "post">
                 <input type="hidden" name="prev" value="sports"/>
                 <input type="submit" value="Rock Climbing" />
             </form>
@@ -13,6 +13,14 @@
                 <br>
                 <button type="submit">{{sport.name}}</button>
             {% endfor %}
+        </div>
+        <br />
+        <div class="flight-container" style="overflow: visible; max-height: 100% text-align:center;">
+            <h4 align="center">Search Staff:</h4>
+            <form action="/search_staff" method="post" style="text-align:center;">
+                <input type="text" name="search_name"/>
+                <button type="submit">Search</button>
+            </form>
         </div>
     </div>
 {% endblock %}

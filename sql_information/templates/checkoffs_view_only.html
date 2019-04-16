@@ -1,4 +1,4 @@
-<!-- /templates/checkoffs.html  -->
+<!-- /templates/checkoffs_view_only.html  -->
 
 {% extends 'base.html' %}
 
@@ -37,13 +37,14 @@
                                         </td>
                                         <td> 
                                             {% if checkoff.checkoff_id not in completed_ids %}
-                                                <form align="center" action="/checkoff_sheet_edit/{{checkoff.checkoff_id}}" method = "post">
+                                                <p>Not Yet Completed</p>
+                                                <!-- <form align="center" action="/checkoff_sheet_edit/{{checkoff.checkoff_id}}" method = "post"> -->
                                                     <!-- <input type="hidden" name="signing_member_id" value="{{member}}"/>
                                                     <input type="hidden" name="name" value="{{name}}"/>
                                                     <input type="text" name="signing_member_name" placeholder="Signature"> -->
-                                                    <br>
-                                                    <input type="submit" value="Sign Off"/> 
-                                                </form>
+                                                    <!-- <br> -->
+                                                    <!-- <input type="submit" value="Sign Off"/>  -->
+                                                <!-- </form> -->
                                             {% else %}
                                                 {% for completed_checkoff in completed_checkoffs %}
                                                     {% if checkoff.checkoff_id == completed_checkoff.checkoff %}
@@ -77,14 +78,14 @@
                             {% endfor %}
                             </tbody>
                         </table>
-                        <h3 align="center">Query Execution Time: {{time}} seconds</h3>
-                                        </td>
-                                    </tr>
+                        <!-- <h3 align="center">Query Execution Time: {{time}} seconds</h3> -->
+                                        <!-- </td>
+                                    </tr> -->
                     {% endif %}
                 {% endfor %}
-                            </tbody>
+                            <!-- </tbody>
                         </table>
-                        <br>
+                        <br> -->
 
                     <!-- <button type="submit" class="btn btn-block btn-primary">Update Checkoffs</button> -->
                     <!-- <form action="/checkoff_sheet_edit/{{name}}", method = "post">
