@@ -25,24 +25,34 @@
                             {% for checkoff in checkoffs %}
                             <!-- id = {{checkoff.id}} went after <tr> -->
                                 {% if checkoff.category == category.cat_name and checkoff.required_position == position.position_name %}
-                                    <tr> 
-                                        <td>{{checkoff.title}} 
+                                    <tr>
+                                        <td><b>{{checkoff.title}}</b>
+                                            <form align="center" action="/requirement_confirm/{{checkoff.checkoff_id}}" method = "post">
                                                 {% for requirement in requirements %}
                                                     {% if requirement.checkoff_id == checkoff.checkoff_id %}
-                                                        <br>
-                                                        <input type="checkbox" name="checkbox" id= {{requirement.id}} value="value">
+                                                        <div>
+                                                            {% if requirement.req_id not in completed_reqs %}
+                                                                <input type="checkbox" name="checkbox{{requirement.req_id}}" id= {{requirement.id}} value="value">
+                                                            {% else %}
+                                                                <input type="checkbox" name="checkbox{{requirement.req_id}}" id= {{requirement.id}} value="value" checked>
+                                                            {% endif %}
                                                         <label for={{requirement.id}}>{{requirement.description}}</label>
+                                                        </div>
                                                     {% endif %}
                                                 {% endfor %}
+                                                <br>
+                                                <input type="submit" value="Sign Off"/>
+                                            </form>
                                         </td>
-                                        <td> 
+                                        <td>
                                             {% if checkoff.checkoff_id not in completed_ids %}
-                                                <form align="center" action="/checkoff_sheet_edit/{{checkoff.checkoff_id}}" method = "post">
+                                                <form align="center" action="/checkoff_confirm/{{checkoff.checkoff_id}}" method = "post">
                                                     <!-- <input type="hidden" name="signing_member_id" value="{{member}}"/>
                                                     <input type="hidden" name="name" value="{{name}}"/>
                                                     <input type="text" name="signing_member_name" placeholder="Signature"> -->
-                                                    <br>
-                                                    <input type="submit" value="Sign Off"/> 
+                                                    Checkoff Incomplete
+                                                    <input type="submit" value="Sign Off"/>
+
                                                 </form>
                                             {% else %}
                                                 {% for completed_checkoff in completed_checkoffs %}

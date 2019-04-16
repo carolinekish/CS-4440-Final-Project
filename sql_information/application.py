@@ -34,6 +34,12 @@ def getCompletedCheckoffIDs(completed_checkoffs):
       completed_ids.append(checkoff.checkoff)
    return completed_ids
 
+def getCompletedRequirementIDs(completed_reqs):
+    completed_ids = []
+    for req in completed_reqs:
+        completed_ids.append(req.req_id)
+    return completed_ids
+
 @application.route('/')
 def start():
        return render_template('login.html')
@@ -77,64 +83,91 @@ def search_staff():
       searched_member_name = found_member[1]
       return redirect(url_for('display_checkoff_sheet', name = searched_member_name, member_id = searched_member_id))
     
-@application.route('/checkoff_sheet/<name>_<member_id>') #, methods = ['POST']
+@application.route('/checkoff_sheet/<name>_<member_id>', methods = ['GET', 'POST'])
 def display_checkoff_sheet(name, member_id):
-   startTime = time.time() # start time
 
-   posQuery = db.engine.execute('SELECT position_name FROM sheet_contains WHERE sheet_name = \'Rock Climbing Checkoff Sheet\'') # todo: paramaterize the sport?
-   positions = posQuery.fetchall()
-   category_query_string = getCorrectCategories(positions)
-   cat_belongsTo_position_Query = db.engine.execute(category_query_string)
-   checkoffQuery = db.engine.execute('SELECT * FROM checkoff')
-   completedCheckoffsQuery = db.engine.execute('SELECT checkoff, signature, date_time FROM completed_checkoffs WHERE member=%s', member_id)
-   reqsQuery = db.engine.execute('SELECT * FROM requirement ')
+    startTime = time.time() # start time
 
-   endTime = time.time() # end time
+    posQuery = db.engine.execute('SELECT position_name FROM sheet_contains WHERE sheet_name = \'Rock Climbing Checkoff Sheet\'') # todo: paramaterize the sport?
+    positions = posQuery.fetchall()
+    category_query_string = getCorrectCategories(positions)
+    cat_belongsTo_position_Query = db.engine.execute(category_query_string)
+    checkoffQuery = db.engine.execute('SELECT * FROM checkoff')
+    completedCheckoffsQuery = db.engine.execute('SELECT checkoff, signature, date_time FROM completed_checkoffs WHERE member=%s', member_id)
+    reqsQuery = db.engine.execute('SELECT * FROM requirement ')
+    completedReqsQuery = db.engine.execute('SELECT * FROM completed_requirements WHERE member=%s', member_id)
 
-   query_execution_time = endTime - startTime
-   cat = cat_belongsTo_position_Query.fetchall()
-   chks = checkoffQuery.fetchall()
-   completed_chks = completedCheckoffsQuery.fetchall()
-   completed_ids = getCompletedCheckoffIDs(completed_chks)
-   print(completed_ids)
-   reqs = reqsQuery.fetchall()
-   
-   view = ''
-   if name==member_name and member_id==member_id :
+    endTime = time.time() # end time
+
+    query_execution_time = endTime - startTime
+    cat = cat_belongsTo_position_Query.fetchall()
+    chks = checkoffQuery.fetchall()
+    completed_chks = completedCheckoffsQuery.fetchall()
+    completed_ids = getCompletedCheckoffIDs(completed_chks)
+    print(completed_ids)
+    reqs = reqsQuery.fetchall()
+    completed_reqs = completedReqsQuery.fetchall()
+    completed_req_ids = getCompletedRequirementIDs(completed_reqs)
+    print(completed_req_ids)
+    view = ''
+    if name==member_name and member_id==member_id :
       view = 'checkoffs_view_only.html'
-   else:
+    else:
       view = 'checkoffs.html'
-   
-   return render_template(view, 
-         name = name,
-         categories=cat,
-         positions=positions,
-         checkoffs=chks,
-         completed_ids=completed_ids,
-         completed_checkoffs=completed_chks,
-         requirements=reqs,
-         time=query_execution_time) 
 
-@application.route('/checkoff_confirm/<checkoff_id>', methods = ['POST'])
-def display_confirmation(checkoff_id):
+    return render_template(view,
+            name = name,
+            categories=cat,
+            positions=positions,
+            checkoffs=chks,
+            completed_ids=completed_ids,
+            completed_checkoffs=completed_chks,
+            requirements=reqs,
+            completed_reqs=completed_req_ids,
+            time=query_execution_time)
+
+@application.route('/requirement_confirm/<checkoff_id>', methods = ['POST'])
+def display_requirement_confirmation(checkoff_id):
+
     reqIdQuery = db.engine.execute('SELECT req_id FROM requirement WHERE checkoff_id = %s', checkoff_id)
     reqIds = reqIdQuery.fetchall()
     reqIdList = []
     for id in reqIds:
         reqIdList.append(id.req_id)
     print(reqIdList)
+    completed_reqs = []
     for id in reqIdList:
         name = 'checkbox' + str(id)
-        sign_name2 = request.form['signing_member_name']
-        value = request.form[name]
-        print(value)
-    sign_name = request.form['signing_member_name']
-    mem_name = request.form['name']
-    return render_template('confirm.html',
-                           name=sign_name,
+        try:
+            value = request.form[name]
+            print(value)
+            completed_reqs.append(id)
+            try:
+                db.engine.execute(
+                    'INSERT INTO completed_requirements (member, req_id, signature, date_time) VALUES (%s,%s,%s,CURRENT_TIMESTAMP)',
+                    searched_member_id, id, member_name)
+            except:
+                print("Already Completed!")
+
+        except KeyError:
+            print("bad key: ", name)
+    return render_template('req_confirm.html',
                            chk_id=checkoff_id,
                            memberid=member_id,
-                           membername=mem_name)
+                           searched_member_name=searched_member_name,
+                           searched_member_id=searched_member_id,
+                           completed_reqs=completed_reqs)
+
+@application.route('/checkoff_confirm/<checkoff_id>', methods = ['POST'])
+def display_checkoff_confirmation(checkoff_id):
+    db.engine.execute(
+        'INSERT INTO completed_checkoffs (member, checkoff, signature, date_time) VALUES (%s,%s,%s,CURRENT_TIMESTAMP)',
+        searched_member_id, checkoff_id, member_name)
+    return render_template('checkoff_confirm.html',
+                           chk_id=checkoff_id,
+                           memberid=member_id,
+                           searched_member_name=searched_member_name,
+                           searched_member_id=searched_member_id)
 
 @application.route('/checkoff_sheet_edit/<checkoff_id>', methods = ['POST'])
 def display_checkoff_sheet_edit(checkoff_id):  

@@ -1,0 +1,17 @@
+<!-- /templates/checkoffs.html  -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Checkoff Updated!</h1>
+    <div>
+        <form align="center" action="/checkoff_sheet/{{searched_member_name}}_{{searched_member_id}}" method = "post">
+            <input type="hidden" name="prev" value="req_confirm"/>
+            <input type="hidden" name="confirm" value="true"/>
+            <input type="hidden" name="signing_member_name" value="{{name}}"/>
+            <input type="submit" value="Ok"/>
+        </form>
+    </div>
+
+
+{% endblock %}
