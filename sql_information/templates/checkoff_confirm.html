@@ -3,7 +3,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Checkoff Updated!</h1>
+    <h1 align="center">Checkoff Updated!</h1>
     <div>
         <form align="center" action="/checkoff_sheet/{{searched_member_name}}_{{searched_member_id}}" method = "post">
             <input type="hidden" name="prev" value="req_confirm"/>
@@ -11,7 +11,6 @@
             <input type="hidden" name="signing_member_name" value="{{name}}"/>
             <input type="submit" value="Ok"/>
         </form>
+        <h6 align="center">INSERT Query Execution Time: {{time}} seconds</h6>
     </div>
-
-
 {% endblock %}

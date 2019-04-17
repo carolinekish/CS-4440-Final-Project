@@ -14,13 +14,34 @@
                 <button type="submit">{{sport.name}}</button>
             {% endfor %}
         </div>
-        <br />
-        <div class="flight-container" style="overflow: visible; max-height: 100% text-align:center;">
-            <h4 align="center">Search Staff:</h4>
-            <form action="/search_staff" method="post" style="text-align:center;">
-                <input type="text" name="search_name"/>
-                <button type="submit">Search</button>
-            </form>
-        </div>
+        {% if position == 'I' or position == 'TL' %}
+            <br />
+            <div class="flight-container" style="overflow: visible; max-height: 100% text-align:center;">
+                <h4 align="center">Search Staff:</h4>
+                <form action="/search_staff" method="post" style="text-align:center;">
+                    <input type="text" name="search_name" placeholder="Name of Staff"/>
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+        {% endif %}
+        {% if position == 'TL' %}
+            <br />
+            <div class="flight-container" style="overflow visible; max-height: 100% text-align:center;">
+                <h4 align="center">Add Requirement:</h4>
+                <form action="/add_requirement" method="post" style="text-align:center;">
+                    <input type="text" name="sport" placeholder="Sport"/>
+                    <br>
+                    <input type="text" name="position" placeholder="Position"/>
+                    <br>
+                    <input type="text" name="category" placeholder="Category"/>
+                    <br>
+                    <input type="text" name="checkoff" placeholder="Checkoff"/>
+                    <br>
+                    <input type="text" name="req_description" placeholder="Requirement Description"/>
+                    <br>
+                    <button type="submit">Add</button>
+                </form>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

@@ -10,6 +10,7 @@ application = Flask(__name__)
 # THIS IS THE LOGGED IN USER:
 member_name = ""
 member_id = 0 # 0 is not a valid member_id
+member_position_title = ""
 
 # THIS IS THE STAFF MEMBER THE LOGGED IN USER SEARCHED FOR:
 searched_member_name = ""
@@ -53,19 +54,19 @@ def login():
       if result != [] :
          global member_id # needed in order to MODIFY a global variable
          global member_name
+         global member_position_title
          member_id = result[0] # should we add them to the table if they are not already added
          member_name = result[1]
+         member_position_title = result[2]
          return redirect(url_for('choose_sport', name = member_name))
-   else:
-      # request.method == 'GET'
-      # orgt_member = request.args.get('member_name')
-      return redirect(url_for('success', name = orgt_member, dumb_var= "dummy :)"))
+      else:
+         print('Something went wrong with login')
 
 @application.route('/choose_sport/<name>')
 def choose_sport(name):
    sports_query = db.engine.execute('SELECT * FROM sport')
    orgt_sports = sports_query.fetchall()
-   return render_template('sports.html', name=name, sports=orgt_sports)
+   return render_template('sports.html', name=name, sports=orgt_sports, position=member_position_title)
 
 @application.route('/checkoff_sheet_user', methods=["POST"])
 def show_own_checkoffs():
@@ -83,6 +84,19 @@ def search_staff():
       searched_member_name = found_member[1]
       return redirect(url_for('display_checkoff_sheet', name = searched_member_name, member_id = searched_member_id))
     
+@application.route("/add_requirement", methods=["POST"])
+def add_requirement():
+   # sport = request.form["sport"]
+   # position = request.form["position"]
+   # category = request.form["category"]
+   checkoff = request.form["checkoff"]
+   req_description= request.form["req_description"]
+
+   checkoff_query = db.engine.execute('SELECT checkoff_id FROM checkoff WHERE title=%s', checkoff)
+   checkoff_id = checkoff_query.first()[0]
+   db.engine.execute('INSERT INTO requirement (description, checkoff_id) VALUES (%s,%s)', req_description, checkoff_id)
+   return redirect(url_for('choose_sport', name = member_name))
+    
 @application.route('/checkoff_sheet/<name>_<member_id>', methods = ['GET', 'POST'])
 def display_checkoff_sheet(name, member_id):
 
@@ -93,24 +107,23 @@ def display_checkoff_sheet(name, member_id):
     category_query_string = getCorrectCategories(positions)
     cat_belongsTo_position_Query = db.engine.execute(category_query_string)
     checkoffQuery = db.engine.execute('SELECT * FROM checkoff')
-    completedCheckoffsQuery = db.engine.execute('SELECT checkoff, signature, date_time FROM completed_checkoffs WHERE member=%s', member_id)
     reqsQuery = db.engine.execute('SELECT * FROM requirement ')
+    completedCheckoffsQuery = db.engine.execute('SELECT checkoff, signature, date_time FROM completed_checkoffs WHERE member=%s', member_id)
     completedReqsQuery = db.engine.execute('SELECT * FROM completed_requirements WHERE member=%s', member_id)
 
     endTime = time.time() # end time
-
     query_execution_time = endTime - startTime
+
     cat = cat_belongsTo_position_Query.fetchall()
     chks = checkoffQuery.fetchall()
     completed_chks = completedCheckoffsQuery.fetchall()
     completed_ids = getCompletedCheckoffIDs(completed_chks)
-    print(completed_ids)
     reqs = reqsQuery.fetchall()
     completed_reqs = completedReqsQuery.fetchall()
     completed_req_ids = getCompletedRequirementIDs(completed_reqs)
-    print(completed_req_ids)
+
     view = ''
-    if name==member_name and member_id==member_id :
+    if name == member_name and member_id == member_id :
       view = 'checkoffs_view_only.html'
     else:
       view = 'checkoffs.html'
@@ -120,9 +133,9 @@ def display_checkoff_sheet(name, member_id):
             categories=cat,
             positions=positions,
             checkoffs=chks,
+            requirements=reqs,
             completed_ids=completed_ids,
             completed_checkoffs=completed_chks,
-            requirements=reqs,
             completed_reqs=completed_req_ids,
             time=query_execution_time)
 
@@ -134,13 +147,12 @@ def display_requirement_confirmation(checkoff_id):
     reqIdList = []
     for id in reqIds:
         reqIdList.append(id.req_id)
-    print(reqIdList)
     completed_reqs = []
+    startTime = time.time()
     for id in reqIdList:
         name = 'checkbox' + str(id)
         try:
             value = request.form[name]
-            print(value)
             completed_reqs.append(id)
             try:
                 db.engine.execute(
@@ -151,33 +163,31 @@ def display_requirement_confirmation(checkoff_id):
 
         except KeyError:
             print("bad key: ", name)
+
+    endTime = time.time()
+    query_execution_time = endTime-startTime
     return render_template('req_confirm.html',
                            chk_id=checkoff_id,
                            memberid=member_id,
                            searched_member_name=searched_member_name,
                            searched_member_id=searched_member_id,
-                           completed_reqs=completed_reqs)
+                           completed_reqs=completed_reqs,
+                           time=query_execution_time)
 
 @application.route('/checkoff_confirm/<checkoff_id>', methods = ['POST'])
 def display_checkoff_confirmation(checkoff_id):
-    db.engine.execute(
+   startTime = time.time()
+   db.engine.execute(
         'INSERT INTO completed_checkoffs (member, checkoff, signature, date_time) VALUES (%s,%s,%s,CURRENT_TIMESTAMP)',
         searched_member_id, checkoff_id, member_name)
-    return render_template('checkoff_confirm.html',
+   endtime = time.time()
+   query_execution_time = endtime-startTime
+   return render_template('checkoff_confirm.html',
                            chk_id=checkoff_id,
                            memberid=member_id,
                            searched_member_name=searched_member_name,
-                           searched_member_id=searched_member_id)
-
-@application.route('/checkoff_sheet_edit/<checkoff_id>', methods = ['POST'])
-def display_checkoff_sheet_edit(checkoff_id):  
-      if request.method == 'POST':
-         db.engine.execute('INSERT INTO completed_checkoffs (member, checkoff, signature, date_time) VALUES (%s,%s,%s,CURRENT_TIMESTAMP)', searched_member_id, checkoff_id, member_name)
-         return redirect(url_for('display_checkoff_sheet', name = searched_member_name, member_id = searched_member_id))
-
-@application.route('/success/<name><dumb_var>')
-def success(name, dumb_var):
-   return 'welcome %s, %s' % (name, dumb_var)
+                           searched_member_id=searched_member_id,
+                           time=query_execution_time)
 
 if __name__ == '__main__':
     application.run(debug=True, use_reloader=True)      
@@ -188,26 +198,3 @@ FROM requirement
 INNER JOIN checkoff
 ON requirement.checkoff_id=checkoff.checkoff_id;
 '''
-
-# @app.route('/<string:page_name>/')
-# def render_static(page_name):
-#         return render_template('%s.html' % page_name)</string:page_name>
-
-def playingWithPython():
-       return
-        # return redirect(url_for('login'))
-      #   start = func.current_timestamp()
-      #   result = db.engine.execute('SELECT * FROM checkoff_sheet')
-      #   end = func.current_timestamp()
-      #   names = [row[0] for row in result] # names is a list
-
-      #   str = ""
-      #   for name in names:
-      #       str += name + "<br>"
-      #   return str(end - start)
-
-#     printthis
-#     for i in result:
-#             printthis += row[i]];
-#     return (row[0] for row in result)
-
