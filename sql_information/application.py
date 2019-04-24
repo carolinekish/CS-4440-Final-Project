@@ -94,7 +94,10 @@ def add_requirement():
 
    checkoff_query = db.engine.execute('SELECT checkoff_id FROM checkoff WHERE title=%s', checkoff)
    checkoff_id = checkoff_query.first()[0]
+   startTime = time.time()
    db.engine.execute('INSERT INTO requirement (description, checkoff_id) VALUES (%s,%s)', req_description, checkoff_id)
+   endtime = time.time()
+   print("total insert time: %f " %(endtime -startTime))
    return redirect(url_for('choose_sport', name = member_name))
     
 @application.route('/checkoff_sheet/<name>_<member_id>', methods = ['GET', 'POST'])
@@ -107,7 +110,9 @@ def display_checkoff_sheet(name, member_id):
     category_query_string = getCorrectCategories(positions)
     cat_belongsTo_position_Query = db.engine.execute(category_query_string)
     checkoffQuery = db.engine.execute('SELECT * FROM checkoff')
-    reqsQuery = db.engine.execute('SELECT * FROM requirement ')
+    startJoin = time.time()
+    reqsQuery = db.engine.execute('SELECT checkoff.checkoff_id, requirement.req_id, requirement.description FROM requirement INNER JOIN checkoff ON requirement.checkoff_id=checkoff.checkoff_id')
+    endJoin = time.time()
     completedCheckoffsQuery = db.engine.execute('SELECT checkoff, signature, date_time FROM completed_checkoffs WHERE member=%s', member_id)
     completedReqsQuery = db.engine.execute('SELECT * FROM completed_requirements WHERE member=%s', member_id)
 
@@ -121,6 +126,8 @@ def display_checkoff_sheet(name, member_id):
     reqs = reqsQuery.fetchall()
     completed_reqs = completedReqsQuery.fetchall()
     completed_req_ids = getCompletedRequirementIDs(completed_reqs)
+
+    print("join time: %f" %(endJoin - startJoin))
 
     view = ''
     if name == member_name and member_id == member_id :
@@ -190,11 +197,4 @@ def display_checkoff_confirmation(checkoff_id):
                            time=query_execution_time)
 
 if __name__ == '__main__':
-    application.run(debug=True, use_reloader=True)      
-
-'''
-SELECT requirement.description, requirement.signature, requirement.date_time, checkoff.checkoff_id
-FROM requirement
-INNER JOIN checkoff
-ON requirement.checkoff_id=checkoff.checkoff_id;
-'''
+    application.run(debug=True, use_reloader=True)
