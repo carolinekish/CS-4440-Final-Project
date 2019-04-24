@@ -1,0 +1,73 @@
+<!-- /templates/checkoffs.html  -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flight-container" style="overflow: visible; max-height: 100%">
+        <div class="table-responsive">
+            <h3 align="center">{{name}}'s Rock Climbing Checkoff Sheet</h3>
+            <h6 align="center">Query Execution Time: {{time}} seconds</h6>
+            <br>
+            {% for position in positions %} 
+                {% for category in categories %}
+                    {% if position.position_name == category.pos_name %}
+                        <h3 align="center">{{position.position_name}}</h3>
+                        <table class="table" id="checkoffs" rules="all">
+                            <thead>
+                                <tr>
+                                    <th align="center" scope="col" >{{category.cat_name}}</th>
+                                    <th align="center" scope="col" >Signature <br> Date and Time</th>
+                                    <!-- <th scope="col">Date and Time</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for checkoff in checkoffs %}
+                                <!-- id = {{checkoff.id}} went after <tr> -->
+                                    {% if checkoff.category == category.cat_name and checkoff.required_position == position.position_name %}
+                                        <tr>
+                                            <td><b>{{checkoff.title}}</b>
+                                                <form action="/requirement_confirm/{{checkoff.checkoff_id}}" method = "post">
+                                                    {% for requirement in requirements %}
+                                                        {% if requirement.checkoff_id == checkoff.checkoff_id %}
+                                                            <div>
+                                                                {% if requirement.req_id not in completed_reqs %}
+                                                                    <input type="checkbox" name="checkbox{{requirement.req_id}}" id= {{requirement.id}} value="value">
+                                                                {% else %}
+                                                                    <input type="checkbox" name="checkbox{{requirement.req_id}}" id= {{requirement.id}} value="value" checked>
+                                                                {% endif %}
+                                                            <label for={{requirement.id}}>{{requirement.description}}</label>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    <br>
+                                                    <input type="submit" value="Sign Off"/>
+                                                </form>
+                                            </td>
+                                            <td>
+                                                {% if checkoff.checkoff_id not in completed_ids %}
+                                                    <form align="center" action="/checkoff_confirm/{{checkoff.checkoff_id}}" method = "post">
+                                                        <input type="submit" value="Sign Off"/>
+                                                    </form>
+                                                {% else %}
+                                                    {% for completed_checkoff in completed_checkoffs %}
+                                                        {% if checkoff.checkoff_id == completed_checkoff.checkoff %}
+                                                            <form align="center">
+                                                                {{completed_checkoff.signature}}
+                                                                <br>
+                                                                {{completed_checkoff.date_time}}
+                                                            </form>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
