@@ -14,12 +14,13 @@ def connect():
     global db
 
     # MongoDB Local
-    # connection = MongoClient()
-    # db = connection.orgt_db
+    connection = MongoClient()
+    db = connection.orgt_db
 
     # MongoDB Atlas
-    connection = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-bt4cv.mongodb.net/test?retryWrites=true", ssl=True, ssl_cert_reqs=ssl.CERT_NONE)
-    db = connection.atlas_orgt
+    # connection = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-bt4cv.mongodb.net/test?retryWrites=true", ssl=True, ssl_cert_reqs=ssl.CERT_NONE)
+    # db = connection.atlas_orgt
+    # print("DB IS {}".format(db))
 
 
 def disconnect():
@@ -37,6 +38,7 @@ def insert_document_checkoff_sheets_collection(doc):
     """
     try:
         connect()
+        print("connected")
         if type(doc) == list:
             db.checkoff_sheets.insert_many(doc)
         else:
@@ -144,7 +146,7 @@ def insert_document_sports_collection(doc):
         disconnect()
     except Exception as ex:
         print("insert_document_sports_collection error: {}".format(ex))
-        
+
 # debugging
 if __name__=="__main__":
     pass
